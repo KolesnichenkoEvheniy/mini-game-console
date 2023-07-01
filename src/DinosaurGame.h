@@ -2,6 +2,7 @@
 #define __DINOSAUR_H__
 
 #include "globals.h"
+#include "images.h"
 
 void DinosaurGame(void);
 
