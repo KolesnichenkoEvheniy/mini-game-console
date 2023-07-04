@@ -42,16 +42,16 @@ void goToSleep(void) {
     wakeup = false;
     timer = millis();
     while (ok.state()) {
-      if (millis() - timer > WAKEUP_PRESS) {  // Если кнопка нажата дольше указанного - можем просыпаться
+      if (millis() - timer > WAKEUP_PRESS) { // hold button long enough
         wakeup = true;
       }
     } if (wakeup) break;
   }
-  PCMSK1 = 1 << PCINT8 | 1 << PCINT9 | 1 << PCINT10 | 1 << PCINT11 | 1 << PCINT12;  // Возвращаем обратно прерывание по всем кнопкам
+  // Interruprions by buttons
+  PCMSK1 = 1 << PCINT8 | 1 << PCINT9 | 1 << PCINT10 | 1 << PCINT11 | 1 << PCINT12;
   oledPower(true);
 }
 
-/* Тестирование батареи и вывод заряда на экран */
 void batCheckDraw(void) {
   static uint32_t measureTimer = millis() + 3500;
   static uint8_t batCharge = 0;
@@ -65,7 +65,7 @@ void batCheckDraw(void) {
     batCharge = constrain(map((INTERNAL_REF * 1024UL) / ADC, BATTERY_EMPTY, BATTERY_FULL, 0, 12), 0, 12);
   }
 
-  /* Рисуем батарейку */
+  // Drawing the battery level
   oled.setCursorXY(110, 0);
   oled.drawByte(0b00111100);
   oled.drawByte(0b00111100);
