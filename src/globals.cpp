@@ -9,71 +9,69 @@ GButton right(BUTTON_RIGHT);
 
 uint32_t globalSleepTimer = 0;
 
-
-/* Включение и выключения OLED */
-void oledPower(bool state) {                                          // Включение / выключение оледа
-  if (state) {                                                        // Включаем
-    pinMode(OLED_VCC1, OUTPUT);                                       // Питающие пины как выходы
-    pinMode(OLED_VCC0, OUTPUT);                                       // Питающие пины как выходы
-    digitalWrite(OLED_VCC1, HIGH);                                    // Питающие пины в HIGH
-    digitalWrite(OLED_VCC0, HIGH);                                    // Питающие пины в HIGH
-    _delay_ms(15);                                                    // Даем время дисплею оклематься
-    oled.init();                                                      // Инициализируем дисплей
-    oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));    // Восстанавливаем яркость из EEPROM
-  } else {                                                            // Выключаем
-    for (uint8_t i = EEPROM[BRIGHT_EE_ADDR]; i; i--) {                // Плавно от установленной яркости
-      oled.setContrast(i);                                            // Гасим дисплей
-      _delay_ms(10);                                                  // С задержкой для плавности
+void oledPower(bool state) {
+  if (state) {
+    pinMode(OLED_VCC1, OUTPUT);
+    pinMode(OLED_VCC0, OUTPUT);
+    digitalWrite(OLED_VCC1, HIGH);
+    digitalWrite(OLED_VCC0, HIGH);
+    _delay_ms(15);
+    oled.init();
+    oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));
+  } else {
+    for (uint8_t i = EEPROM[BRIGHT_EE_ADDR]; i; i--) {
+      oled.setContrast(i);
+      _delay_ms(10);
     }
-    oled.setPower(false);                                             // Выключаем программно
-    digitalWrite(OLED_VCC1, LOW);                                     // Питающие пины в LOW
-    digitalWrite(OLED_VCC0, LOW);                                     // Питающие пины в LOW
-    pinMode(OLED_VCC1, INPUT);                                        // Питающие пины как входы
-    pinMode(OLED_VCC0, INPUT);                                        // Питающие пины как входы
+    oled.setPower(false);
+    digitalWrite(OLED_VCC1, LOW);
+    digitalWrite(OLED_VCC0, LOW);
+    pinMode(OLED_VCC1, INPUT);
+    pinMode(OLED_VCC0, INPUT);
   }
 }
 
-/* Уход в сон и возврат из сна */
 void goToSleep(void) {
-  bool wakeup;                                // Флаг пробуждения
-  uint32_t timer;                             // Таймер
-  oledPower(false);                           // Выключаем олед
-  PCMSK1 = 1 << PCINT12;                      // Прерывание и пробуждение только по "OK"
-  while (true) {                              // Бесконечный цикл
-    power.sleep(SLEEP_FOREVER);               // << Уходим в сон
-    wakeup = false;                      // >> проснулись, сбросили флаг
-    timer = millis();                // Обновили таймер
-    while (ok.state()) {                      // Пока нажата кнопка
+  bool wakeup;
+  uint32_t timer;
+  oledPower(false);
+  // Interrupt and wake up only on "OK"
+  PCMSK1 = 1 << PCINT12;
+  while (true) {
+    power.sleep(SLEEP_FOREVER);
+    wakeup = false;
+    timer = millis();
+    while (ok.state()) {
       if (millis() - timer > WAKEUP_PRESS) {  // Если кнопка нажата дольше указанного - можем просыпаться
-        wakeup = true;                        // Ставим флаг
+        wakeup = true;
       }
-    } if (wakeup) break;                      // Как только кнопка отпущена, смотрим - если флаг стоит, просыпаемся
+    } if (wakeup) break;
   }
   PCMSK1 = 1 << PCINT8 | 1 << PCINT9 | 1 << PCINT10 | 1 << PCINT11 | 1 << PCINT12;  // Возвращаем обратно прерывание по всем кнопкам
-  oledPower(true);                            // Подрубаем олед заного
+  oledPower(true);
 }
 
 /* Тестирование батареи и вывод заряда на экран */
 void batCheckDraw(void) {
-  static uint32_t measureTimer = millis() + 3500;  // Таймер АЦП (Стартует сразу)
-  static uint8_t batCharge = 0;                    // "Заряд" батареи
+  static uint32_t measureTimer = millis() + 3500;
+  static uint8_t batCharge = 0;
 
   if (millis() - measureTimer >= 3000) {
     measureTimer = millis();
-    /* Измеряем напряжение питания + усредняем */
-    ADCSRA |= 1 << ADSC;                // Запускаем преобразование
-    while (ADCSRA & (1 << ADSC));       // Ждем
-    /* Пересчитываем напряжение в условный заряд */
+    // We measure the supply voltage + average
+    ADCSRA |= 1 << ADSC;
+    while (ADCSRA & (1 << ADSC));
+    // We convert the voltage into a conditional charge
     batCharge = constrain(map((INTERNAL_REF * 1024UL) / ADC, BATTERY_EMPTY, BATTERY_FULL, 0, 12), 0, 12);
   }
 
   /* Рисуем батарейку */
-  oled.setCursorXY(110, 0);                             // Положение на экране
-  oled.drawByte(0b00111100);                            // Пипка
-  oled.drawByte(0b00111100);                            // 2 штуки
-  oled.drawByte(0b11111111);                            // Передняя стенка
-  for (uint8_t i = 0; i < 12; i++) {                    // 12 градаций
-    if (i < 12 - batCharge) oled.drawByte(0b10000001);   // Рисуем пустые
-    else oled.drawByte(0b11111111);                     // Рисуем полные
-  } oled.drawByte(0b11111111);                          // Задняя стенка
+  oled.setCursorXY(110, 0);
+  oled.drawByte(0b00111100);
+  oled.drawByte(0b00111100);
+  oled.drawByte(0b11111111);
+  for (uint8_t i = 0; i < 12; i++) {
+    if (i < 12 - batCharge) oled.drawByte(0b10000001);
+    else oled.drawByte(0b11111111);
+  } oled.drawByte(0b11111111);
 }

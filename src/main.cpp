@@ -6,69 +6,69 @@
 #include "DinosaurGame.h"
 
 void setup() {
-  power.hardwareDisable(PWR_TIMER1 | PWR_TIMER2 | PWR_I2C | PWR_UART0); // Выключаем лишнее
-  power.setSleepMode(POWERDOWN_SLEEP);                                  // Спать будем глубоко
-  power.bodInSleep(false);                                              // И без BOD'a
+  power.hardwareDisable(PWR_TIMER1 | PWR_TIMER2 | PWR_I2C | PWR_UART0);
+  power.setSleepMode(POWERDOWN_SLEEP);
+  power.bodInSleep(false);
 
-  if (EEPROM[KEY_EE_ADDR] != EEPROM_KEY) {    // Проверка EEPROM на первое включение
-    EEPROM[KEY_EE_ADDR] = EEPROM_KEY;         // При первом включении устанавливаем все как надо
+  if (EEPROM[KEY_EE_ADDR] != EEPROM_KEY) {
+    EEPROM[KEY_EE_ADDR] = EEPROM_KEY;
     EEPROM[BRIGHT_EE_ADDR] = 100;
     EEPROM[DINO_EE_ADDR] = 0;
     EEPROM[DINO_EE_ADDR + 1] = 0;
   }
 
-  oledPower(true);              // Включаем и инициализируем дисплей
-  oled.clear();                 // Сразу очищаем его
+  oledPower(true);
+  oled.clear();
 
-  ok.setTickMode(AUTO);         // Настраиваем все кнопки на авто-опрос
+  ok.setTickMode(AUTO);
   up.setTickMode(AUTO);
   down.setTickMode(AUTO);
   left.setTickMode(AUTO);
   right.setTickMode(AUTO);
 
-  left.setStepTimeout(100);     // Настраиваем таймауты удержания
+  left.setStepTimeout(100);
   right.setStepTimeout(100);
 
-  /* Настриаваем прерывания по всем кнопкам - чтобы отслеживать нажатия */
-  PCICR = 1 << PCIE1;                                                               // Включаем прерывание по действию всех кнопок
-  PCMSK1 = 1 << PCINT8 | 1 << PCINT9 | 1 << PCINT10 | 1 << PCINT11 | 1 << PCINT12;  // Активируем на всех пинах, где есть кнопки
-  globalSleepTimer = millis();                                                      // Сброс глобального таймера сна
+  /* Enable interrupts for all buttons */
+  PCICR = 1 << PCIE1;
+  // Activate on all pins where there are buttons
+  PCMSK1 = 1 << PCINT8 | 1 << PCINT9 | 1 << PCINT10 | 1 << PCINT11 | 1 << PCINT12;
+  globalSleepTimer = millis();
 
-  /* Настриаваем АЦП для измерения напряжения питания */
-  ADMUX = DEFAULT << 6 | 0b1110;      // Опорное - AVCC, вход АЦП к внутреннему опорному
-  ADCSRA = 1 << ADEN | 0b101;         // Вкл. АЦП + средн. скорость АЦП
-  for (uint8_t i = 0; i < 8; i++) {   // Несколько ложных преобразований - отфильтровать мусор
-    ADCSRA |= 1 << ADSC;              // Запускаем преобразование
-    while (ADCSRA & (1 << ADSC));     // Ждем окончания
+  // Setting up the ADC to measure the supply voltage
+  ADMUX = DEFAULT << 6 | 0b1110;
+  ADCSRA = 1 << ADEN | 0b101;
+  for (uint8_t i = 0; i < 8; i++) {
+    ADCSRA |= 1 << ADSC;
+    while (ADCSRA & (1 << ADSC));
   }
 
 }
 
 void loop() {
-  static uint8_t menuPtr = 2;  // Положение указателя меню
+  static uint8_t menuPtr = 2;
 
-  /* Обработка кнопок в главном меню */
-  if (left.isClick() or left.isStep()) {  // Влево - уменьшить и сохранить яркость
-    EEPROM[BRIGHT_EE_ADDR] = constrain(EEPROM[BRIGHT_EE_ADDR] - 5, 5, 100); // Уменьшаем значение в EEPROM [5-100%]
-    oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));          // Устанавливаем яркость дисплея
+  if (left.isClick() or left.isStep()) {
+    EEPROM[BRIGHT_EE_ADDR] = constrain(EEPROM[BRIGHT_EE_ADDR] - 5, 5, 100);
+    oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));
   }
 
-  if (right.isClick() or right.isStep()) {  // Вправо - увеличить и сохранить яркость
-    EEPROM[BRIGHT_EE_ADDR] = constrain(EEPROM[BRIGHT_EE_ADDR] + 5, 5, 100); // Увеличиваем значение в EEPROM [5-100%]
-    oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));          // Устанавливаем яркость дисплея
+  if (right.isClick() or right.isStep()) {
+    EEPROM[BRIGHT_EE_ADDR] = constrain(EEPROM[BRIGHT_EE_ADDR] + 5, 5, 100);
+    oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));
   }
 
-  if (up.isClick()) {                       // Вверх - выбрать пункт выше
-    menuPtr = constrain(menuPtr - 1, 2, APPS_AMOUNT + 1); // Двигаем указатель в пределах меню
+  if (up.isClick()) {
+    menuPtr = constrain(menuPtr - 1, 2, APPS_AMOUNT + 1);
   }
 
-  if (down.isClick()) {                     // Вниз - выбрать пункт ниже
-    menuPtr = constrain(menuPtr + 1, 2, APPS_AMOUNT + 1); // Двигаем указатель в пределах меню
+  if (down.isClick()) {
+    menuPtr = constrain(menuPtr + 1, 2, APPS_AMOUNT + 1);
   }
 
-  if (ok.isClick()) {                       // Ок - перейти в приложение
-    switch (menuPtr) {                      // В зависимости от пункта меню
-      case 2: DinosaurGame(); break;        // Вызываем нужное
+  if (ok.isClick()) {
+    switch (menuPtr) {
+      case 2: DinosaurGame(); break;
       case 3: break;
       case 4: break;
       case 5: break;
@@ -77,35 +77,35 @@ void loop() {
     }
   }
 
-  /* Отрисовка главного меню */
+  // Main menu
   static uint32_t drawTimer = millis();
-  if (millis() - drawTimer >= (1000 / MENU_FRAMERATE)) {        // По таймеру на миллис
+  if (millis() - drawTimer >= (1000 / MENU_FRAMERATE)) {
     drawTimer = millis();
-    oled.clear();                                               // Чистим дисплей
-    oled.setCursor(24, 2); oled.print(F("DINOSAUR GAME"));      // Выводим название приложений
+    oled.clear();
+    oled.setCursor(24, 2); oled.print(F("DINOSAUR GAME"));
     // oled.setCursor(24, 3); oled.print(F("NEW GAME NAME"));   // пустые заготовки
     // oled.setCursor(24, 4); oled.print(F("NEW GAME NAME"));
     // oled.setCursor(24, 5); oled.print(F("NEW GAME NAME"));
     // oled.setCursor(24, 6); oled.print(F("NEW GAME NAME"));
     // oled.setCursor(24, 7); oled.print(F("NEW GAME NAME"));
 
-    oled.setCursor(0, menuPtr); oled.print('>');                // Выводим левый указатель
-    oled.setCursor(122, menuPtr); oled.print('<');              // Выводим правый указатель
-    oled.home(); oled.print(F("BRIGHT: "));                     // Выводим яркость
-    oled.print(EEPROM[BRIGHT_EE_ADDR]); oled.print(" % ");      // Из EEPROM
-    batCheckDraw();                                             // Проверка и отрисовка заряда
-    oled.update();                                              // Выводим изображение на дисплей
+    oled.setCursor(0, menuPtr); oled.print('>');
+    oled.setCursor(122, menuPtr); oled.print('<');
+    oled.home(); oled.print(F("BRIGHT: "));
+    oled.print(EEPROM[BRIGHT_EE_ADDR]); oled.print(" % ");
+    batCheckDraw();
+    oled.update();
   }
 
-  if (millis() - globalSleepTimer > SLEEP_TIMEOUT) {            // Проверка глобального таймера сна
-    goToSleep();                                                // Если кнопки долго не нажимались - идем спать
+  if (millis() - globalSleepTimer > SLEEP_TIMEOUT) {
+    goToSleep();
   }
 }
 
-/* ----------------------------------------------------- Сервисные функции ----------------------------------------------------- */
+/* -----------------------------------------------------  System ----------------------------------------------------- */
 
-/* Это прерывание вызывается при ЛЮБОМ действии ЛЮБОЙ кнопки */
+/* This interrupt is triggered by ANY action of ANY button */
 ISR(PCINT1_vect) {
-  globalSleepTimer = millis();  // Обновляем глобальный таймер нажатий
+  globalSleepTimer = millis();
 }
 
