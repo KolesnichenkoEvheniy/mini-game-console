@@ -4,6 +4,9 @@
 #define DINO_GROUND_Y 47
 #define DINO_GRAVITY  0.195f
 #define DINO_GAME_FPS 30
+#define SCREEN_WIDTH 128
+
+enum EnemyType{SmallCactus=0, BigCactus=1, Bird=2};
 
 void PlayDinosaurGame(void) {
   down.setTimeout(160);
@@ -14,9 +17,9 @@ startDinoGame:
   uint8_t gameSpeed = 10;
   uint16_t score = 0;
   uint16_t bestScore = 0;
-  int8_t oldEnemyPos = 128;
+  int8_t oldEnemyPos = SCREEN_WIDTH;
   int8_t oldEnemyType = 0;
-  int8_t newEnemyPos = 128;
+  int8_t newEnemyPos = SCREEN_WIDTH;
   int8_t newEnemyType = random(0, 3);
   bool dinoStand = true;
   bool legFlag = true;
@@ -64,7 +67,7 @@ startDinoGame:
       if (--newEnemyPos < 16) {
         oldEnemyPos = newEnemyPos;
         oldEnemyType = newEnemyType;
-        newEnemyPos = 128;
+        newEnemyPos = SCREEN_WIDTH;
         newEnemyType = random(0, 3);
       }
       if (oldEnemyPos >= -24) {
@@ -109,28 +112,25 @@ startDinoGame:
       oled.line(0, 63, 127, 63); // draw line
 
       switch (oldEnemyType) {
-        case 0: 
-          // small cactus
+        case EnemyType::SmallCactus:
           oled.drawBitmap(oldEnemyPos, 48, CactusSmall_bmp, 16, 16);
           break;
-        case 1:
-          // big cactus
+        case EnemyType::BigCactus:
           oled.drawBitmap(oldEnemyPos, 48, CactusBig_bmp, 24, 16);
           break;
-        case 2:
-          // bird
+        case EnemyType::Bird:
           oled.drawBitmap(oldEnemyPos, 35, birdFlag ? BirdL_bmp : BirdR_bmp, 24, 16);
           break;
       }
 
       switch (newEnemyType) {
-        case 0:
+        case EnemyType::SmallCactus:
           oled.drawBitmap(newEnemyPos, 48, CactusSmall_bmp, 16, 16);                  
           break;
-        case 1:
+        case EnemyType::BigCactus:
           oled.drawBitmap(newEnemyPos, 48, CactusBig_bmp, 24, 16);                    
           break;
-        case 2:
+        case EnemyType::Bird:
           oled.drawBitmap(newEnemyPos, 35, birdFlag ? BirdL_bmp : BirdR_bmp, 24, 16); 
           break;
       }
@@ -138,7 +138,7 @@ startDinoGame:
 
       // Tracing a Collision
       if (oldEnemyPos <= 16 and oldEnemyPos >= (oldEnemyType > 0 ? -24 : -16)) {
-        if (oldEnemyType != 2 ? dinoY > 32 : dinoStand and dinoY > 19) {
+        if (oldEnemyType != EnemyType::Bird ? dinoY > 32 : dinoStand and dinoY > 19) {
           oled.drawBitmap(0, dinoY, DinoStandDie_bmp, 16, 16);
           oled.roundRect(0, 10, 127, 40, OLED_CLEAR); oled.roundRect(0, 10, 127, 40, OLED_STROKE);
           oled.setScale(2); oled.setCursor(7, 2); oled.print(F("GAME OVER!"));
