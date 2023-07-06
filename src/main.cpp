@@ -4,6 +4,7 @@
 #include <util/delay.h>
 #include "globals.h"
 #include "DinosaurGame.h"
+#include "MicroPong.h"
 
 void setup() {
   power.hardwareDisable(PWR_TIMER1 | PWR_TIMER2 | PWR_I2C | PWR_UART0);
@@ -69,7 +70,7 @@ void loop() {
   if (ok.isClick()) {
     switch (menuPtr) {
       case 2: DinosaurGame(); break;
-      case 3: break;
+      case 3: MicroPongGame(); break;
       case 4: break;
       case 5: break;
       case 6: break;
@@ -83,7 +84,7 @@ void loop() {
     drawTimer = millis();
     oled.clear();
     oled.setCursor(24, 2); oled.print(F("DINOSAUR GAME"));
-    // oled.setCursor(24, 3); oled.print(F("NEW GAME NAME"));   // пустые заготовки
+    oled.setCursor(24, 3); oled.print(F("PING PONG"));
     // oled.setCursor(24, 4); oled.print(F("NEW GAME NAME"));
     // oled.setCursor(24, 5); oled.print(F("NEW GAME NAME"));
     // oled.setCursor(24, 6); oled.print(F("NEW GAME NAME"));

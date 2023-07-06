@@ -4,7 +4,6 @@
 #define DINO_GROUND_Y 47
 #define DINO_GRAVITY  0.195f
 #define DINO_GAME_FPS 30
-#define SCREEN_WIDTH 128
 
 enum EnemyType{SmallCactus=0, BigCactus=1, Bird=2};
 

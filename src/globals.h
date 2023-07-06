@@ -21,6 +21,7 @@
 #define OLED_DC        9
 #define OLED_CS        10
 #define OLED_SPI_SPEED 4000000ul
+#define SCREEN_WIDTH 128
 
 // Power
 #define INTERNAL_REF  1100
@@ -29,19 +30,19 @@
 #define SLEEP_TIMEOUT 30000
 
 /* EEPROM */
-#define EEPROM_KEY      0xB1  // EEPROM KEY
-#define KEY_EE_ADDR     0     // EEPROM KEY address
-#define BRIGHT_EE_ADDR  1     // Display brightness address in EEPROM
-#define DINO_EE_ADDR    2     // "Dinosaur game" address in EEPROM
+#define EEPROM_KEY          0xB1  // EEPROM KEY
+#define KEY_EE_ADDR         0     // EEPROM KEY address
+#define BRIGHT_EE_ADDR      1     // Display brightness address in EEPROM
+#define DINO_EE_ADDR        2     // "Dinosaur game" address in EEPROM
+#define MICROPONG_EE_ADDR   3     // "MicroPong game" address in EEPROM
 
 // Menu
 #define MENU_FRAMERATE  30
-#define APPS_AMOUNT     1
+#define APPS_AMOUNT     2
 
 #include <GyverButton.h>
 #include <GyverPower.h>
 #include <GyverOLED.h>
-
 
 
 // Objects
