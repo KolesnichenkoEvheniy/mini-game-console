@@ -261,6 +261,12 @@ void PlayMicroPongGame(void) {
       oled.update();
     }
 
+    static uint32_t scoreTimer = millis();
+    if (millis() - scoreTimer >= 100) {
+      scoreTimer = millis();
+      score++;
+    }
+
     if (score > bestScore) EEPROM.put(MICROPONG_EE_ADDR, score);
   }
 }
