@@ -223,12 +223,14 @@ void PlayMicroPongGame(void) {
           if (RANDOM_BOUNCE) ballSpeed[1] *= (random(0, 2)) ? 1 : -1;
         }
       }
-      if (ballPos[1] > 15) {
-        ballPos[1] = 15;
+
+      #define MAX_BALL_Y 35
+      if (ballPos[1] > MAX_BALL_Y) {
+        ballPos[1] = MAX_BALL_Y;
         ballSpeed[1] = -ballSpeed[1];
       }
 
-      dotClear(prevPos[0], prevPos[1]);
+      //dotClear(prevPos[0], prevPos[1]);
       dotSet(ballPos[0], ballPos[1]);
     }
 
