@@ -262,7 +262,7 @@ void PlayMicroPongGame(void) {
     }
 
     static uint32_t scoreTimer = millis();
-    if (millis() - scoreTimer >= 100) {
+    if (millis() - scoreTimer >= 1000) {
       scoreTimer = millis();
       score++;
     }
