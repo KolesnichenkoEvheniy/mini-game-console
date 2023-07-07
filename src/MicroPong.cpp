@@ -137,6 +137,7 @@ void newRound() {
 
 void DrawGameOverAction(void) {
   oled.clear();
+  batCheckDraw();
 
   oled.roundRect(0, 10, 127, 40, OLED_CLEAR); oled.roundRect(0, 10, 127, 40, OLED_STROKE);
   oled.setScale(2); oled.setCursor(7, 2); oled.print(F("GAME OVER!"));
@@ -167,6 +168,7 @@ void PlayMicroPongGame(void) {
 
     if (millis() - ballTimer >= (GAME_SPEED - speedIncr)) {
       oled.clear();
+      batCheckDraw();
 
       ballTimer = millis();
       int8_t prevPos[2];
