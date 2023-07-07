@@ -16,6 +16,9 @@ void setup() {
     EEPROM[BRIGHT_EE_ADDR] = 100;
     EEPROM[DINO_EE_ADDR] = 0;
     EEPROM[DINO_EE_ADDR + 1] = 0;
+
+    EEPROM[MICROPONG_EE_ADDR] = 0;
+    EEPROM[MICROPONG_EE_ADDR + 1] = 0;
   }
 
   oledPower(true);

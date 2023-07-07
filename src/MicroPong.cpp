@@ -1,23 +1,22 @@
 #include "MicroPong.h"
 
 #define GAME_SPEED 100    // стандартный период движения шарика
-#define II_SPEED 250      // стандартный период движения противника
+#define II_SPEED 100      // стандартный период движения противника
 #define RANDOM_BOUNCE 1   // отбивать шарик в случайном направлении
-
-// пины
-#define BTN_UP 3
-#define BTN_DWN 4
 
 // другие настройки
 #define X_PLAYER_1 7
 #define X_PLAYER_2 SCREEN_WIDTH - 7
-#define RACKET_LEN 5
+#define RACKET_LEN 15
+#define MAX_BALL_Y 63//70 - RACKET_LEN / 2
+#define RACKET_STEP 5
+#define TOP_LINE_Y 10
 
 int8_t ballPos[2];
 int8_t ballSpeed[2];
 uint32_t ballTimer, enemyTimer;
 boolean btnFlag1, btnFlag2;
-int8_t racketPos1, racketPos2 = 0;
+int8_t racketPos1, racketPos2 = TOP_LINE_Y + 1;
 int8_t prevRacketPos1, prevRacketPos2 = 0;
 byte count1, count2;
 byte speedIncr = 0, iiIncr = 0;
@@ -33,10 +32,10 @@ uint16_t bestScore = 0;
 //   digit(0, 0, 0);
 //   digit(0, 20, 0);
 
-//   randomSeed(analogRead(0));
-//   newRound();
-//   redrawRacket();
-//   redrawRacket2();
+  // randomSeed(analogRead(0));
+  // newRound();
+  // redrawRacket();
+  // redrawRacket2();
 // }
 
 void dotSet(byte x, byte y) {
@@ -114,22 +113,22 @@ void redrawRacket2() {
 void newRound() {
   randomSeed(millis());
   ballPos[0] = X_PLAYER_1 + 1;
-  racketPos1 = random(0, 16 - RACKET_LEN);
+  racketPos1 = random(TOP_LINE_Y + 1, MAX_BALL_Y - RACKET_LEN);
   ballPos[1] = racketPos1 + RACKET_LEN / 2;
   ballSpeed[0] = 2;
   ballSpeed[1] = (random(0, 2)) ? 1 : -1;
   //racketPos2 = 8;
   redrawRacket();
   redrawRacket2();
-  if (count1 >= 10) {
+  if (score >= 10) {
     speedIncr = 10;
     iiIncr = 70;
   }
-  if (count1 >= 20) {
+  if (score >= 20) {
     speedIncr = 25;
     iiIncr = 150;
   }
-  if (count1 >= 30) {
+  if (score >= 30) {
     speedIncr = 40;
     iiIncr = 190;
   }
@@ -156,12 +155,14 @@ void DrawGameOverAction(void) {
 
 void PlayMicroPongGame(void) {
   down.setTimeout(160);
-  ok.setTimeout(160);
-  ok.setStepTimeout(160);
+  up.setTimeout(160);
 
   score = 0;
   bestScore = 0;
-  EEPROM.get(DINO_EE_ADDR, bestScore);
+  EEPROM.get(MICROPONG_EE_ADDR, bestScore);
+
+  randomSeed(millis());
+  newRound();
 
   while (1) {
     if (left.isClick()) return;
@@ -169,6 +170,15 @@ void PlayMicroPongGame(void) {
     if (millis() - ballTimer >= (GAME_SPEED - speedIncr)) {
       oled.clear();
       batCheckDraw();
+      
+      oled.line(0, TOP_LINE_Y, 127, TOP_LINE_Y); // draw line
+      oled.setCursor(0, 0); oled.print("HI");
+      // currect score
+      oled.setCursor(13, 0); oled.print(bestScore); oled.print(":"); oled.print(score);
+      oled.line(0, 63, 127, 63); // draw line
+
+      redrawRacket();
+      redrawRacket2();
 
       ballTimer = millis();
       int8_t prevPos[2];
@@ -197,27 +207,18 @@ void PlayMicroPongGame(void) {
           if (RANDOM_BOUNCE) ballSpeed[1] *= (random(0, 2)) ? 1 : -1;
         }
       }
-      if (ballPos[1] < 0) {
-        ballPos[1] = -ballPos[1];
+     
+      if (ballPos[1] <= TOP_LINE_Y + 1) {
+        ballPos[1] = TOP_LINE_Y + 1;
         ballSpeed[1] = -ballSpeed[1];
       }
 
       // Tracing a collision
       if (ballPos[0] > X_PLAYER_2) {
         if (!(prevPos[1] >= racketPos2 && prevPos[1] <= (racketPos2 + RACKET_LEN))) {
-          count1++;
-          if (count1 > 9) {
-            // digit(count1 / 10, 0, 0);
-            // digit(count1 % 10, 0, 1);
-          } else {
-            // digit(count1, 0, 0);
-          }
-//          oled.setCursor(0, 0); oled.print(count1);
+          score++;
 
           DrawGameOverAction();
-
-          // newRound();
-         // dotClear(prevPos[0], prevPos[1]);
           return;
         } else {
           ballPos[0] = prevPos[0];
@@ -226,41 +227,41 @@ void PlayMicroPongGame(void) {
         }
       }
 
-      #define MAX_BALL_Y 35
-      if (ballPos[1] > MAX_BALL_Y) {
-        ballPos[1] = MAX_BALL_Y;
+      if (ballPos[1] > MAX_BALL_Y - 1) {
+        ballPos[1] = MAX_BALL_Y - 1;
         ballSpeed[1] = -ballSpeed[1];
       }
 
-      //dotClear(prevPos[0], prevPos[1]);
+      // dotClear(prevPos[0], prevPos[1]);
       dotSet(ballPos[0], ballPos[1]);
-    }
 
-    if (up.isClick() || up.isHold()) {
-      btnFlag2 = true;
-      racketPos1 -= 2;
-      if (racketPos1 < 0) racketPos1 = 0;
-      redrawRacket();
-    }
+      if (up.isClick() || up.isHold()) {
+        racketPos1 -= RACKET_STEP;
 
-    if (down.isClick() || down.isHold()) {
-      racketPos1 += 2;
-      if (racketPos1 > (16 - RACKET_LEN)) racketPos1 = (16 - RACKET_LEN);
-      redrawRacket();
+        if (racketPos1 < TOP_LINE_Y + 1) racketPos1 = TOP_LINE_Y + 1;
+        redrawRacket();
+      }
+
+      if (down.isClick() || down.isHold()) {
+        racketPos1 += RACKET_STEP;
+        
+        if (racketPos1 > (MAX_BALL_Y - RACKET_LEN)) racketPos1 = (MAX_BALL_Y - RACKET_LEN);
+        redrawRacket();
+      }
+
+      oled.update();
     }
 
     if (millis() - enemyTimer >= (II_SPEED - iiIncr)) {
       enemyTimer = millis();
       if (racketPos2 + RACKET_LEN / 2 > ballPos[1]) racketPos2--;
       else racketPos2++;
-      racketPos2 = constrain(racketPos2, 0, 16 - RACKET_LEN);
+      racketPos2 = constrain(racketPos2, 0, MAX_BALL_Y - RACKET_LEN);
       redrawRacket2();
+      oled.update();
     }
 
-    oled.update();
-
     if (score > bestScore) EEPROM.put(MICROPONG_EE_ADDR, score);
-
   }
 }
 
@@ -268,7 +269,7 @@ void PlayMicroPongGame(void) {
 void MicroPongGame(void) {
   while (true) {
     uint16_t bestScore = 0;
-    EEPROM.get(DINO_EE_ADDR, bestScore);
+    EEPROM.get(MICROPONG_EE_ADDR, bestScore);
     oled.clear();
     oled.roundRect(0, 9, 127, 46, OLED_STROKE);
     oled.setCursor(3, 0); oled.print(F("MICROPONG GAME"));
