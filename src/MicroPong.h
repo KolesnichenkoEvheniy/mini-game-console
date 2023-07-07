@@ -6,4 +6,8 @@
 
 void MicroPongGame(void);
 
+void PlayMicroPongGame(void);
+
+void DrawGameOverAction(void);
+
 #endif // __MICROPONG_H__
