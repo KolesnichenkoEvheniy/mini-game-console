@@ -1,14 +1,14 @@
 #include "MicroPong.h"
 
-#define GAME_SPEED 100    // стандартный период движения шарика
-#define II_SPEED 100      // стандартный период движения противника
+#define GAME_SPEED 50    // стандартный период движения шарика
+#define II_SPEED 50      // стандартный период движения противника
 #define RANDOM_BOUNCE 1   // отбивать шарик в случайном направлении
 
 // другие настройки
 #define X_PLAYER_1 7
 #define X_PLAYER_2 SCREEN_WIDTH - 7
 #define RACKET_LEN 15
-#define MAX_BALL_Y 63//70 - RACKET_LEN / 2
+#define MAX_BALL_Y 63
 #define RACKET_STEP 5
 #define TOP_LINE_Y 10
 
@@ -22,21 +22,6 @@ byte count1, count2;
 byte speedIncr = 0, iiIncr = 0;
 uint16_t score = 0;
 uint16_t bestScore = 0;
-
-// void setup() {
-//   pinMode(BTN_UP, INPUT_PULLUP);
-//   pinMode(BTN_DWN, INPUT_PULLUP);
-//   Wire.begin();
-//   oledInit();
-//   oledClear();
-//   digit(0, 0, 0);
-//   digit(0, 20, 0);
-
-  // randomSeed(analogRead(0));
-  // newRound();
-  // redrawRacket();
-  // redrawRacket2();
-// }
 
 void dotSet(byte x, byte y) {
   oled.rect(x, y, x + 1, y + 1, OLED_FILL);
@@ -65,50 +50,6 @@ void redrawRacket2() {
   }
   prevRacketPos2 = racketPos2;
 }
-
-
-// void enemyTick() {
-//   if (millis() - enemyTimer >= (II_SPEED - iiIncr)) {
-//     enemyTimer = millis();
-//     if (racketPos2 + RACKET_LEN / 2 > ballPos[1]) racketPos2--;
-//     else racketPos2++;
-//     racketPos2 = constrain(racketPos2, 0, 16 - RACKET_LEN);
-//     redrawRacket2();
-//   }
-// }
-
-// void buttonTick() {
-//   // if (!digitalRead(BTN_DWN) && !btnFlag1) {
-//   //   //btnFlag1 = true;
-//   //   racketPos1 += 2;
-//   //   if (racketPos1 > (16 - RACKET_LEN)) racketPos1 = (16 - RACKET_LEN);
-//   //   redrawRacket();
-//   // }
-//   // if (digitalRead(BTN_DWN) && btnFlag1) {
-//   //   btnFlag1 = false;
-//   // }
-
-//   if (up.isClick() || up.isHold()) {
-//     btnFlag2 = true;
-//     racketPos1 -= 2;
-//     if (racketPos1 < 0) racketPos1 = 0;
-//     redrawRacket();
-//   }
-
-//   if (down.isClick() || down.isHold()) {
-//     racketPos1 += 2;
-//     if (racketPos1 > (16 - RACKET_LEN)) racketPos1 = (16 - RACKET_LEN);
-//     redrawRacket();
-//   }
-
-//   // if (down.isClick() || down.isHold() && btnFlag2) {
-//   //   btnFlag2 = false;
-//   // }
-
-//   // if (digitalRead(BTN_UP) && btnFlag2) {
-//   //   btnFlag2 = false;
-//   // }
-// }
 
 void newRound() {
   randomSeed(millis());
@@ -254,7 +195,8 @@ void PlayMicroPongGame(void) {
 
     if (millis() - enemyTimer >= (II_SPEED - iiIncr)) {
       enemyTimer = millis();
-      if (racketPos2 + RACKET_LEN / 2 > ballPos[1]) racketPos2--;
+      // racketPos2 + RACKET_LEN / 2 > ballPos[1]
+      if (racketPos2 > ballPos[1]) racketPos2--;
       else racketPos2++;
       racketPos2 = constrain(racketPos2, 0, MAX_BALL_Y - RACKET_LEN);
       redrawRacket2();
