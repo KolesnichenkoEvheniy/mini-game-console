@@ -1,7 +1,7 @@
 #include "MicroPong.h"
 
-#define GAME_SPEED 50    // стандартный период движения шарика
-#define II_SPEED 50      // стандартный период движения противника
+#define GAME_SPEED 20    // стандартный период движения шарика
+#define II_SPEED 30      // стандартный период движения противника
 #define RANDOM_BOUNCE 1   // отбивать шарик в случайном направлении
 
 // другие настройки
@@ -131,16 +131,7 @@ void PlayMicroPongGame(void) {
       if (ballPos[0] < X_PLAYER_1) {
         if (!(prevPos[1] >= racketPos1 && prevPos[1] <= (racketPos1 + RACKET_LEN))) {
           count2++;
-          // if (count2 > 9) {
-          //   digit(count2 / 10, 20, 0);
-          //   digit(count2 % 10, 20, 1);
-          // } else {
-          //   digit(count2, 20, 0);
-          // }
-
-          // FIXME: END GAME?
           DrawGameOverAction();
-          //dotClear(prevPos[0], prevPos[1]);
           return;
         } else {
           ballPos[0] = prevPos[0];
@@ -224,12 +215,18 @@ void MicroPongGame(void) {
     oled.setCursor(20, 6); oled.print(F("BEST SCORE:")); oled.print(bestScore);
     oled.setCursor(0, 7); oled.print(F("<- MENU"));
     oled.setCursor(85, 7); oled.print(F("PLAY ->"));
-    // oled.drawBitmap(10, 30, DinoStandL_bmp, 16, 16);
-    // oled.drawBitmap(46, 30, CactusBig_bmp, 24, 16);
-    // oled.drawBitmap(94, 20, BirdL_bmp, 24, 16);
+
+    // Game image (demo rockets with a ball in the middle)
+    oled.rect(46, 22, 48, 37, OLED_FILL); // rocket 1
+    oled.rect(76, 22, 78, 37, OLED_FILL); // rocket 2
+    oled.rect(61, 30, 62, 31, OLED_FILL); // ball
+
     oled.update();
     while (true) {
-      if (left.isClick()) return;
+      if (left.isClick()) {
+        resetButtonsSetup();
+        return;
+      }
       if (right.isClick()) {
         PlayMicroPongGame();
         break;

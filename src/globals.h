@@ -34,7 +34,7 @@
 #define KEY_EE_ADDR         0     // EEPROM KEY address
 #define BRIGHT_EE_ADDR      1     // Display brightness address in EEPROM
 #define DINO_EE_ADDR        2     // "Dinosaur game" address in EEPROM
-#define MICROPONG_EE_ADDR   3     // "MicroPong game" address in EEPROM
+#define MICROPONG_EE_ADDR   4     // "MicroPong game" address in EEPROM
 
 // Menu
 #define MENU_FRAMERATE  30
