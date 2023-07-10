@@ -38,7 +38,7 @@
 
 // Menu
 #define MENU_FRAMERATE  30
-#define APPS_AMOUNT     2
+#define APPS_AMOUNT     3
 
 #include <GyverButton.h>
 #include <GyverPower.h>

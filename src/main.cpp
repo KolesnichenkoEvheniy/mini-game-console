@@ -46,7 +46,17 @@ void setup() {
     ADCSRA |= 1 << ADSC;
     while (ADCSRA & (1 << ADSC));
   }
+}
 
+void ResetGameScore() {
+  EEPROM.put(DINO_EE_ADDR, 0);
+  EEPROM.put(MICROPONG_EE_ADDR, 0);
+
+  oled.clear();
+  oled.roundRect(0, 10, 127, 40, OLED_CLEAR); oled.roundRect(0, 10, 127, 40, OLED_STROKE);
+  oled.setScale(2); oled.setCursor(40, 2); oled.print(F("DONE!")); oled.setScale(1);
+  oled.update();
+  delay(3000);
 }
 
 void loop() {
@@ -74,7 +84,7 @@ void loop() {
     switch (menuPtr) {
       case 2: DinosaurGame(); break;
       case 3: MicroPongGame(); break;
-      case 4: break;
+      case 4: ResetGameScore(); break;
       case 5: break;
       case 6: break;
       case 7: break;
@@ -88,7 +98,7 @@ void loop() {
     oled.clear();
     oled.setCursor(24, 2); oled.print(F("DINOSAUR GAME"));
     oled.setCursor(24, 3); oled.print(F("PING PONG"));
-    // oled.setCursor(24, 4); oled.print(F("NEW GAME NAME"));
+    oled.setCursor(24, 4); oled.print(F("reset score"));
     // oled.setCursor(24, 5); oled.print(F("NEW GAME NAME"));
     // oled.setCursor(24, 6); oled.print(F("NEW GAME NAME"));
     // oled.setCursor(24, 7); oled.print(F("NEW GAME NAME"));
