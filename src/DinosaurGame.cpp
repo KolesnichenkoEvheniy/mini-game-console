@@ -12,7 +12,6 @@ void PlayDinosaurGame(void) {
   ok.setTimeout(160);
   ok.setStepTimeout(160);
 
-startDinoGame:
   uint8_t gameSpeed = 10;
   uint16_t score = 0;
   uint16_t bestScore = 0;
@@ -146,7 +145,7 @@ startDinoGame:
           oled.update();
           if (score > bestScore) EEPROM.put(DINO_EE_ADDR, score);
           while (1) {
-            if (right.isClick()) goto startDinoGame;
+            if (right.isClick()) PlayDinosaurGame();
             if (left.isClick()) return;
             if (millis() - globalSleepTimer > SLEEP_TIMEOUT) {
               goToSleep();
@@ -182,7 +181,10 @@ void DinosaurGame(void) {
     oled.drawBitmap(94, 20, BirdL_bmp, 24, 16);
     oled.update();
     while (true) {
-      if (left.isClick()) return;
+      if (left.isClick()) {
+        resetButtonsSetup();
+        return;
+      }
       if (right.isClick()) {
         PlayDinosaurGame();
         break;

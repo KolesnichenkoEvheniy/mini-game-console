@@ -52,12 +52,12 @@ void setup() {
 void loop() {
   static uint8_t menuPtr = 2;
 
-  if (left.isClick() or left.isStep()) {
+  if (left.isClick() || left.isStep()) {
     EEPROM[BRIGHT_EE_ADDR] = constrain(EEPROM[BRIGHT_EE_ADDR] - 5, 5, 100);
     oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));
   }
 
-  if (right.isClick() or right.isStep()) {
+  if (right.isClick() || right.isStep()) {
     EEPROM[BRIGHT_EE_ADDR] = constrain(EEPROM[BRIGHT_EE_ADDR] + 5, 5, 100);
     oled.setContrast(map(EEPROM[BRIGHT_EE_ADDR], 0, 100, 0, 255));
   }

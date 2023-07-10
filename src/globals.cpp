@@ -75,3 +75,19 @@ void batCheckDraw(void) {
     else oled.drawByte(0b11111111);
   } oled.drawByte(0b11111111);
 }
+
+void resetButtonsSetup(void) {
+  ok.resetStates();
+  left.resetStates();
+  right.resetStates();
+  up.resetStates();
+  down.resetStates();
+
+  left.setStepTimeout(100);
+  right.setStepTimeout(100);
+  
+  ok.setTimeout(500);
+  down.setTimeout(500);
+
+  ok.setStepTimeout(400);
+}

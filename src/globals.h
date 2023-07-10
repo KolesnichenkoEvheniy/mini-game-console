@@ -9,10 +9,10 @@
 // Buttons
 #define WAKEUP_PRESS  500
 #define BUTTON_OK     A4
-#define BUTTON_UP     A3
-#define BUTTON_DOWN   A2
-#define BUTTON_LEFT   A1
-#define BUTTON_RIGHT  A0
+#define BUTTON_UP     A1
+#define BUTTON_DOWN   A3
+#define BUTTON_LEFT   A0
+#define BUTTON_RIGHT  A2
 
 // Display
 #define OLED_VCC1      6
@@ -60,5 +60,7 @@ void oledPower(bool state);
 void goToSleep(void);
 
 void batCheckDraw(void);
+
+void resetButtonsSetup(void);
 
 #endif // __GLOBALS_H__
