@@ -9,10 +9,10 @@
 // Buttons
 #define WAKEUP_PRESS  500
 #define BUTTON_OK     A4
-#define BUTTON_UP     A3
-#define BUTTON_DOWN   A2
-#define BUTTON_LEFT   A1
-#define BUTTON_RIGHT  A0
+#define BUTTON_UP     A1
+#define BUTTON_DOWN   A3
+#define BUTTON_LEFT   A0
+#define BUTTON_RIGHT  A2
 
 // Display
 #define OLED_VCC1      6
@@ -21,6 +21,7 @@
 #define OLED_DC        9
 #define OLED_CS        10
 #define OLED_SPI_SPEED 4000000ul
+#define SCREEN_WIDTH 128
 
 // Power
 #define INTERNAL_REF  1100
@@ -29,19 +30,19 @@
 #define SLEEP_TIMEOUT 30000
 
 /* EEPROM */
-#define EEPROM_KEY      0xB1  // EEPROM KEY
-#define KEY_EE_ADDR     0     // EEPROM KEY address
-#define BRIGHT_EE_ADDR  1     // Display brightness address in EEPROM
-#define DINO_EE_ADDR    2     // "Dinosaur game" address in EEPROM
+#define EEPROM_KEY          0xB1  // EEPROM KEY
+#define KEY_EE_ADDR         0     // EEPROM KEY address
+#define BRIGHT_EE_ADDR      1     // Display brightness address in EEPROM
+#define DINO_EE_ADDR        2     // "Dinosaur game" address in EEPROM
+#define MICROPONG_EE_ADDR   4     // "MicroPong game" address in EEPROM
 
 // Menu
 #define MENU_FRAMERATE  30
-#define APPS_AMOUNT     1
+#define APPS_AMOUNT     2
 
 #include <GyverButton.h>
 #include <GyverPower.h>
 #include <GyverOLED.h>
-
 
 
 // Objects
@@ -59,5 +60,7 @@ void oledPower(bool state);
 void goToSleep(void);
 
 void batCheckDraw(void);
+
+void resetButtonsSetup(void);
 
 #endif // __GLOBALS_H__

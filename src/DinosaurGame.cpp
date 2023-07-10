@@ -4,7 +4,6 @@
 #define DINO_GROUND_Y 47
 #define DINO_GRAVITY  0.195f
 #define DINO_GAME_FPS 30
-#define SCREEN_WIDTH 128
 
 enum EnemyType{SmallCactus=0, BigCactus=1, Bird=2};
 
@@ -13,7 +12,6 @@ void PlayDinosaurGame(void) {
   ok.setTimeout(160);
   ok.setStepTimeout(160);
 
-startDinoGame:
   uint8_t gameSpeed = 10;
   uint16_t score = 0;
   uint16_t bestScore = 0;
@@ -147,7 +145,7 @@ startDinoGame:
           oled.update();
           if (score > bestScore) EEPROM.put(DINO_EE_ADDR, score);
           while (1) {
-            if (right.isClick()) goto startDinoGame;
+            if (right.isClick()) PlayDinosaurGame();
             if (left.isClick()) return;
             if (millis() - globalSleepTimer > SLEEP_TIMEOUT) {
               goToSleep();
@@ -174,7 +172,7 @@ void DinosaurGame(void) {
     EEPROM.get(DINO_EE_ADDR, bestScore);
     oled.clear();
     oled.roundRect(0, 9, 127, 46, OLED_STROKE);
-    oled.setCursor(3, 0); oled.print(F("GOOGLE DINOSAUR GAME"));
+    oled.setCursor(3, 0); oled.print(F("DINOSAUR GAME"));
     oled.setCursor(20, 6); oled.print(F("BEST SCORE:")); oled.print(bestScore);
     oled.setCursor(0, 7); oled.print(F("<- MENU"));
     oled.setCursor(85, 7); oled.print(F("PLAY ->"));
@@ -183,7 +181,10 @@ void DinosaurGame(void) {
     oled.drawBitmap(94, 20, BirdL_bmp, 24, 16);
     oled.update();
     while (true) {
-      if (left.isClick()) return;
+      if (left.isClick()) {
+        resetButtonsSetup();
+        return;
+      }
       if (right.isClick()) {
         PlayDinosaurGame();
         break;

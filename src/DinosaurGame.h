@@ -6,4 +6,6 @@
 
 void DinosaurGame(void);
 
+void PlayDinosaurGame(void);
+
 #endif // __DINOSAUR_H__
