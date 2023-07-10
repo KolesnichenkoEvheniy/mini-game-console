@@ -109,7 +109,7 @@ void loop() {
     oled.print(EEPROM[BRIGHT_EE_ADDR]); oled.print(" % ");
 
     oled.setCursor(15, 7);
-    oled.print(F("(c) Gnom Krafter"));
+    oled.print(F("(c) Gnom Crafter"));
 
     batCheckDraw();
     oled.update();

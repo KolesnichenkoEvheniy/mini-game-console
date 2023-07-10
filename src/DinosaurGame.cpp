@@ -146,7 +146,10 @@ void PlayDinosaurGame(void) {
           if (score > bestScore) EEPROM.put(DINO_EE_ADDR, score);
           while (1) {
             if (right.isClick()) PlayDinosaurGame();
-            if (left.isClick()) return;
+            if (left.isClick()) {
+              resetButtonsSetup();
+              return;
+            }
             if (millis() - globalSleepTimer > SLEEP_TIMEOUT) {
               goToSleep();
             }

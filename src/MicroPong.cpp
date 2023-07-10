@@ -76,6 +76,7 @@ void newRound() {
 }
 
 void DrawGameOverAction(void) {
+  resetButtonsSetup();
   batCheckDraw();
 
   oled.roundRect(0, 10, 127, 40, OLED_CLEAR); oled.roundRect(0, 10, 127, 40, OLED_STROKE);
