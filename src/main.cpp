@@ -97,6 +97,10 @@ void loop() {
     oled.setCursor(122, menuPtr); oled.print('<');
     oled.home(); oled.print(F("BRIGHT: "));
     oled.print(EEPROM[BRIGHT_EE_ADDR]); oled.print(" % ");
+
+    oled.setCursor(15, 7);
+    oled.print(F("(c) Gnom Krafter"));
+
     batCheckDraw();
     oled.update();
   }

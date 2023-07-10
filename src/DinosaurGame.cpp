@@ -172,7 +172,7 @@ void DinosaurGame(void) {
     EEPROM.get(DINO_EE_ADDR, bestScore);
     oled.clear();
     oled.roundRect(0, 9, 127, 46, OLED_STROKE);
-    oled.setCursor(3, 0); oled.print(F("GOOGLE DINOSAUR GAME"));
+    oled.setCursor(3, 0); oled.print(F("DINOSAUR GAME"));
     oled.setCursor(20, 6); oled.print(F("BEST SCORE:")); oled.print(bestScore);
     oled.setCursor(0, 7); oled.print(F("<- MENU"));
     oled.setCursor(85, 7); oled.print(F("PLAY ->"));

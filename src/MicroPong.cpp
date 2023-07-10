@@ -76,7 +76,6 @@ void newRound() {
 }
 
 void DrawGameOverAction(void) {
-  oled.clear();
   batCheckDraw();
 
   oled.roundRect(0, 10, 127, 40, OLED_CLEAR); oled.roundRect(0, 10, 127, 40, OLED_STROKE);
@@ -209,6 +208,7 @@ void MicroPongGame(void) {
   while (true) {
     uint16_t bestScore = 0;
     EEPROM.get(MICROPONG_EE_ADDR, bestScore);
+
     oled.clear();
     oled.roundRect(0, 9, 127, 46, OLED_STROKE);
     oled.setCursor(3, 0); oled.print(F("MICROPONG GAME"));
