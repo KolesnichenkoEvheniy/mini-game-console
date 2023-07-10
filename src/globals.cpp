@@ -83,10 +83,16 @@ void resetButtonsSetup(void) {
   up.resetStates();
   down.resetStates();
 
+  ok.setStepTimeout(100);
+  up.setStepTimeout(100);
+  down.setStepTimeout(100);
   left.setStepTimeout(100);
   right.setStepTimeout(100);
   
   ok.setTimeout(500);
+  left.setTimeout(500);
+  right.setTimeout(500);
+  up.setTimeout(500);
   down.setTimeout(500);
 
   ok.setStepTimeout(400);
