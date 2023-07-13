@@ -28,7 +28,10 @@ void PlayDinosaurGame(void) {
   EEPROM.get(DINO_EE_ADDR, bestScore);
 
   while (1) {
-    if (left.isClick()) return;
+    if (left.isClick()) {
+      resetButtonsSetup();
+      return;
+    }
 
     /* ------------------ User input ------------------ */
     if (ok.isClick() and dinoY == DINO_GROUND_Y) {

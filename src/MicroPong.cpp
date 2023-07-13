@@ -58,7 +58,7 @@ void newRound() {
   ballPos[1] = racketPos1 + RACKET_LEN / 2;
   ballSpeed[0] = 2;
   ballSpeed[1] = (random(0, 2)) ? 1 : -1;
-  //racketPos2 = 8;
+
   redrawRacket();
   redrawRacket2();
   if (score >= 10) {
@@ -87,7 +87,10 @@ void DrawGameOverAction(void) {
   if (score > bestScore) EEPROM.put(MICROPONG_EE_ADDR, score);
   while (1) {
     if (right.isClick()) PlayMicroPongGame();
-    if (left.isClick()) return;
+    if (left.isClick()) {
+      resetButtonsSetup();
+      return;
+    }
     if (millis() - globalSleepTimer > SLEEP_TIMEOUT) {
       goToSleep();
     }
